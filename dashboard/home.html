@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Whole Chicken Without Skin AI — Welcome</title>
+  <meta name="description" content="Upload your sales data to power the Whole Chicken Without Skin AI Pricing Intelligence Dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary:  #ea580c;
+      --primary2: #f97316;
+      --accent:   #0d9488;
+      --accent2:  #14b8a6;
+      --bg:       #faf9f7;
+      --card:     #ffffff;
+      --border:   #e2e8f0;
+      --text:     #1e293b;
+      --muted:    #64748b;
+      --green:    #10b981;
+      --red:      #ef4444;
+      --glow:     rgba(234, 88, 12, 0.18);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ── BLOBS ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.12;
+    }
+    .blob1 { width: 700px; height: 700px; background: var(--primary);  top: -250px; left: -200px; }
+    .blob2 { width: 500px; height: 500px; background: var(--accent);   bottom: -150px; right: -100px; }
+    .blob3 { width: 350px; height: 350px; background: #f59e0b;          top: 45%; left: 55%; }
+
+    /* ── MAIN WRAPPER ── */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      gap: 40px;
+    }
+
+    /* ── HEADER ── */
+    .hero-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+    .logo-icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      box-shadow: 0 8px 32px var(--glow), 0 0 0 1px rgba(234,88,12,0.1);
+    }
+    .hero-header h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--primary) 20%, var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-header p {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    /* ── BADGE ── */
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border: 1px solid;
+    }
+    .badge-orange { background: rgba(234,88,12,0.08);  border-color: rgba(234,88,12,0.25);  color: var(--primary); }
+    .badge-teal   { background: rgba(13,148,136,0.08); border-color: rgba(13,148,136,0.25); color: var(--accent); }
+    .badge-green  { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.25); color: var(--green); }
+
+    /* ── CARD ── */
+    .upload-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── DROP ZONE ── */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 48px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: var(--primary);
+      background: rgba(234,88,12,0.04);
+    }
+    .drop-icon {
+      font-size: 48px;
+      line-height: 1;
+      filter: drop-shadow(0 2px 6px rgba(234,88,12,0.2));
+    }
+    .drop-zone h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .drop-zone p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .browse-link {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    #fileInput { display: none; }
+
+    /* ── FILE PREVIEW ── */
+    .file-preview {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(234,88,12,0.06);
+      border: 1px solid rgba(234,88,12,0.2);
+      border-radius: 12px;
+    }
+    .file-preview.show { display: flex; }
+    .file-preview .icon { font-size: 30px; }
+    .file-preview .info { flex: 1; min-width: 0; }
+    .file-preview .fname {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .file-preview .fsize {
+      font-size: 12px; color: var(--muted); margin-top: 2px;
+    }
+    .file-preview .remove-btn {
+      background: none; border: none; font-size: 20px;
+      cursor: pointer; color: var(--muted); padding: 4px;
+      border-radius: 6px; transition: color 0.2s;
+    }
+    .file-preview .remove-btn:hover { color: var(--red); }
+
+    /* ── SUBMIT ── */
+    .upload-btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: white;
+      box-shadow: 0 4px 18px var(--glow);
+      transition: all 0.25s ease;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .upload-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px var(--glow);
+    }
+    .upload-btn:disabled {
+      opacity: 0.55; cursor: not-allowed; transform: none;
+    }
+
+    /* ── PROGRESS ── */
+    .progress-wrap { display: none; flex-direction: column; gap: 8px; }
+    .progress-wrap.show { display: flex; }
+    .progress-bar-track {
+      height: 8px; border-radius: 99px;
+      background: #e2e8f0; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      width: 0%; transition: width 0.3s ease;
+    }
+    .progress-label {
+      font-size: 13px; color: var(--muted); text-align: center;
+    }
+
+    /* ── ALERT ── */
+    .alert {
+      display: none;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .alert.show { display: flex; }
+    .alert-success {
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: #065f46;
+    }
+    .alert-error {
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #991b1b;
+    }
+
+    /* ── DASHBOARD BTN ── */
+    .dashboard-btn {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid var(--accent);
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      background: rgba(13,148,136,0.06);
+      color: var(--accent);
+      transition: all 0.25s ease;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .dashboard-btn.show { display: flex; }
+    .dashboard-btn:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(13,148,136,0.25);
+    }
+
+    /* ── OR divider ── */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 12px; color: var(--muted); font-weight: 500;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── SKIP LINK ── */
+    .skip-link {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .skip-link a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .skip-link a:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── COLUMN FORMAT ── */
+    .csv-hint {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .csv-hint h4 {
+      font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text);
+    }
+    .columns-grid {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .col-chip {
+      font-size: 11px; font-weight: 600;
+      background: rgba(234,88,12,0.08);
+      border: 1px solid rgba(234,88,12,0.2);
+      color: var(--primary);
+      padding: 3px 10px;
+      border-radius: 99px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background blobs -->
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <div class="wrapper">
+    <!-- Hero Header -->
+    <div class="hero-header">
+      <div class="logo-icon">🍗</div>
+      <h1>Whole Chicken Without Skin AI</h1>
+      <p>Upload your <strong>sales_data.csv</strong> to power the pricing intelligence dashboard with real market data.</p>
+      <div class="badge-row">
+        <span class="badge badge-orange">📊 NVIDIA Llama 3.1</span>
+        <span class="badge badge-teal">🔢 ML Demand Forecast</span>
+        <span class="badge badge-green">🟢 AI Active</span>
+      </div>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="upload-card">
+
+      <!-- Drop Zone -->
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div class="drop-icon">📂</div>
+        <h3>Drop your CSV file here</h3>
+        <p>or <span class="browse-link">browse from your computer</span></p>
+        <p style="font-size:12px; margin-top:4px;">Supports: .csv &nbsp;·&nbsp; Max size: 50 MB</p>
+      </div>
+      <input type="file" id="fileInput" accept=".csv" />
+
+      <!-- File Preview -->
+      <div class="file-preview" id="filePreview">
+        <span class="icon">📄</span>
+        <div class="info">
+          <div class="fname" id="fileName">—</div>
+          <div class="fsize" id="fileSize">—</div>
+        </div>
+        <button class="remove-btn" onclick="clearFile()" title="Remove file">✕</button>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">Uploading…</div>
+      </div>
+
+      <!-- Alerts -->
+      <div class="alert alert-success" id="alertSuccess">
+        <span style="font-size:20px;">✅</span>
+        <div id="alertSuccessMsg">File uploaded successfully! Your dashboard is ready.</div>
+      </div>
+      <div class="alert alert-error" id="alertError">
+        <span style="font-size:20px;">❌</span>
+        <div id="alertErrorMsg">Upload failed. Please try again.</div>
+      </div>
+
+      <!-- Upload Button -->
+      <button class="upload-btn" id="uploadBtn" onclick="uploadFile()" disabled>
+        <span class="btn-label">Upload & Analyse</span>
+      </button>
+
+      <!-- Dashboard Button (appears after success) -->
+      <a href="index.html" class="dashboard-btn" id="dashboardBtn">
+        🚀 Open Dashboard
+      </a>
+
+      <!-- CSV Hint -->
+      <div class="csv-hint">
+        <h4>📋 Required CSV columns</h4>
+        <div class="columns-grid">
+          <span class="col-chip">date</span>
+          <span class="col-chip">hour</span>
+          <span class="col-chip">day</span>
+          <span class="col-chip">weather</span>
+          <span class="col-chip">season</span>
+          <span class="col-chip">festival</span>
+          <span class="col-chip">stock_start</span>
+          <span class="col-chip">sold</span>
+          <span class="col-chip">remaining</span>
+          <span class="col-chip">price</span>
+        </div>
+      </div>
+
+      <!-- Divider + Skip -->
+      <div class="divider">or</div>
+      <div class="skip-link">
+        Already have data? <a href="index.html">Skip to Dashboard →</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Whole Chicken Without Skin AI &nbsp;·&nbsp; Powered by NVIDIA Llama-3.1-70B
+  </footer>
+
+  <script>
+    const API_BASE = 'http://localhost:8000';
+
+    const dropZone   = document.getElementById('dropZone');
+    const fileInput  = document.getElementById('fileInput');
+    const filePreview = document.getElementById('filePreview');
+    const uploadBtn  = document.getElementById('uploadBtn');
+    const progressWrap = document.getElementById('progressWrap');
+    const progressFill = document.getElementById('progressFill');
+    const progressLabel= document.getElementById('progressLabel');
+    const alertSuccess = document.getElementById('alertSuccess');
+    const alertError   = document.getElementById('alertError');
+    const dashboardBtn = document.getElementById('dashboardBtn');
+
+    let selectedFile = null;
+
+    // ── DRAG & DROP ──────────────────────────────
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', e => {
+      if (e.target.files[0]) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+      if (!file.name.endsWith('.csv')) {
+        showError('Only .csv files are accepted.');
+        return;
+      }
+      selectedFile = file;
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileSize').textContent = formatBytes(file.size);
+      filePreview.classList.add('show');
+      uploadBtn.disabled = false;
+      hideAlerts();
+      dashboardBtn.classList.remove('show');
+    }
+
+    function clearFile() {
+      selectedFile = null;
+      fileInput.value = '';
+      filePreview.classList.remove('show');
+      uploadBtn.disabled = true;
+      hideAlerts();
+      dashboardBtn.classList.remove('show');
+    }
+
+    // ── UPLOAD ───────────────────────────────────
+    async function uploadFile() {
+      if (!selectedFile) return;
+
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<div class="spinner"></div><span>Uploading…</span>';
+      progressWrap.classList.add('show');
+      progressFill.style.width = '0%';
+      progressLabel.textContent = 'Uploading…';
+      hideAlerts();
+      dashboardBtn.classList.remove('show');
+
+      // Animate progress bar
+      let prog = 0;
+      const ticker = setInterval(() => {
+        prog = Math.min(prog + Math.random() * 12, 85);
+        progressFill.style.width = prog + '%';
+      }, 180);
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      try {
+        const res = await fetch(`${API_BASE}/upload`, {
+          method: 'POST',
+          body: formData
+        });
+
+        clearInterval(ticker);
+        progressFill.style.width = '100%';
+        progressLabel.textContent = 'Complete!';
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: 'Unknown error' }));
+          throw new Error(err.detail || 'Upload failed');
+        }
+
+        const data = await res.json();
+        setTimeout(() => {
+          progressWrap.classList.remove('show');
+          showSuccess(`✅ "${data.filename}" uploaded successfully. Dashboard is ready!`);
+          dashboardBtn.classList.add('show');
+          uploadBtn.innerHTML = '<span class="btn-label">Upload & Analyse</span>';
+        }, 500);
+
+      } catch (err) {
+        clearInterval(ticker);
+        progressWrap.classList.remove('show');
+        showError(err.message || 'Upload failed. Make sure the API server is running on port 8000.');
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<span class="btn-label">Upload & Analyse</span>';
+      }
+    }
+
+    // ── HELPERS ──────────────────────────────────
+    function showSuccess(msg) {
+      document.getElementById('alertSuccessMsg').textContent = msg;
+      alertSuccess.classList.add('show');
+      alertError.classList.remove('show');
+    }
+    function showError(msg) {
+      document.getElementById('alertErrorMsg').textContent = msg;
+      alertError.classList.add('show');
+      alertSuccess.classList.remove('show');
+    }
+    function hideAlerts() {
+      alertSuccess.classList.remove('show');
+      alertError.classList.remove('show');
+    }
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024, sizes = ['B','KB','MB','GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k,i)).toFixed(1)) + ' ' + sizes[i];
+    }
+  </script>
+</body>
+</html>
