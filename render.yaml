@@ -1,0 +1,12 @@
+services:
+  - type: web_service
+    name: pricingchickenai
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: NVIDIA_API_KEY
+        fromSecret: NVIDIA_API_KEY
