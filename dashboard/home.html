@@ -365,7 +365,7 @@
     <div class="hero-header">
       <div class="logo-icon">🍗</div>
       <h1>Whole Chicken Without Skin AI</h1>
-      <p>Upload your <strong>sales_data.csv</strong> to power the pricing intelligence dashboard with real market data.</p>
+      <p>Upload your <strong>sales_data.csv</strong> or Excel file to power the pricing intelligence dashboard with real market data.</p>
       <div class="badge-row">
         <span class="badge badge-orange">📊 NVIDIA Llama 3.1</span>
         <span class="badge badge-teal">🔢 ML Demand Forecast</span>
@@ -379,11 +379,11 @@
       <!-- Drop Zone -->
       <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
         <div class="drop-icon">📂</div>
-        <h3>Drop your CSV file here</h3>
+        <h3>Drop your CSV or Excel file here</h3>
         <p>or <span class="browse-link">browse from your computer</span></p>
-        <p style="font-size:12px; margin-top:4px;">Supports: .csv &nbsp;·&nbsp; Max size: 50 MB</p>
+        <p style="font-size:12px; margin-top:4px;">Supports: .csv, .xlsx, .xls · Max size: 50 MB</p>
       </div>
-      <input type="file" id="fileInput" accept=".csv" />
+      <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
 
       <!-- File Preview -->
       <div class="file-preview" id="filePreview">
@@ -481,8 +481,8 @@
     });
 
     function handleFile(file) {
-      if (!file.name.endsWith('.csv')) {
-        showError('Only .csv files are accepted.');
+      if (!file.name.endsWith('.csv') && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+        showError('Only .csv, .xlsx, and .xls files are accepted.');
         return;
       }
       selectedFile = file;

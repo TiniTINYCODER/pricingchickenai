@@ -1,6 +1,8 @@
 import csv
 import json
 import os
+from io import BytesIO
+import pandas as pd
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -42,33 +44,53 @@ def upload_page():
 
 
 # ──────────────────────────────────────────────
-# 0. CSV FILE UPLOAD
+# 0. SALES DATA UPLOAD
 # ──────────────────────────────────────────────
 @app.post("/upload")
 async def upload_sales_data(file: UploadFile = File(...)):
-    if not file.filename.endswith(".csv"):
-        raise HTTPException(status_code=400, detail="Only CSV files are accepted.")
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    allowed_exts = {".csv", ".xlsx", ".xls"}
+    if file_ext not in allowed_exts:
+        raise HTTPException(status_code=400, detail="Only .csv, .xlsx, and .xls files are accepted.")
+
     try:
         data_dir = os.path.dirname(DATA_PATH)
         os.makedirs(data_dir, exist_ok=True)
 
-        # Write to a temporary file first (atomic-ish write)
-        tmp_path = DATA_PATH + ".tmp"
         contents = await file.read()
-        with open(tmp_path, "wb") as tmp:
-            tmp.write(contents)
+        data_stream = BytesIO(contents)
 
-        # If the destination already exists, ensure it is writable on Windows
+        if file_ext == ".csv":
+            df = pd.read_csv(data_stream)
+        else:
+            df = pd.read_excel(data_stream)
+
+        required_columns = [
+            "date", "hour", "day", "weather", "season", "festival",
+            "stock_start", "sold", "remaining", "price"
+        ]
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        if missing_columns:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Uploaded file is missing required columns: {', '.join(missing_columns)}"
+            )
+
+        tmp_path = DATA_PATH + ".tmp"
+        df.to_csv(tmp_path, index=False, encoding="utf-8")
+
         if os.path.exists(DATA_PATH):
             import stat
             os.chmod(DATA_PATH, stat.S_IWRITE | stat.S_IREAD)
             os.remove(DATA_PATH)
 
         os.rename(tmp_path, DATA_PATH)
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save file: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to parse and save file: {e}")
     finally:
-        await file.seek(0)       # best-effort rewind; ignore errors
+        await file.seek(0)
     return {"message": "File uploaded successfully", "filename": file.filename}
 
 
