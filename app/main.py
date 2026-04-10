@@ -22,6 +22,14 @@ app.add_middleware(
 DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "sales_data.csv"))
 
 
+@app.get("/")
+def root():
+    return {
+        "message": "Chicken Pricing AI API is running.",
+        "routes": ["/price", "/history", "/chat", "/upload", "/docs"]
+    }
+
+
 # ──────────────────────────────────────────────
 # 0. CSV FILE UPLOAD
 # ──────────────────────────────────────────────
