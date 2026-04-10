@@ -543,9 +543,10 @@
         const data = await res.json();
         setTimeout(() => {
           progressWrap.classList.remove('show');
-          showSuccess(`✅ "${data.filename}" uploaded successfully. Dashboard is ready!`);
+          showSuccess(`✅ "${data.filename}" uploaded successfully. Redirecting to dashboard...`);
           dashboardBtn.classList.add('show');
           uploadBtn.innerHTML = '<span class="btn-label">Upload & Analyse</span>';
+          setTimeout(() => { window.location.href = '/'; }, 1200);
         }, 500);
 
       } catch (err) {
