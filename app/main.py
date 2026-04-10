@@ -31,6 +31,11 @@ def root():
     return FileResponse(os.path.join(DASHBOARD_PATH, "index.html"))
 
 
+@app.get("/upload-page")
+def upload_page():
+    return FileResponse(os.path.join(DASHBOARD_PATH, "home.html"))
+
+
 # ──────────────────────────────────────────────
 # 0. CSV FILE UPLOAD
 # ──────────────────────────────────────────────

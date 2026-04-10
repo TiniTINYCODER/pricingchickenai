@@ -441,7 +441,7 @@
       <!-- Divider + Skip -->
       <div class="divider">or</div>
       <div class="skip-link">
-        Already have data? <a href="index.html">Skip to Dashboard →</a>
+        Already have data? <a href="/">Skip to Dashboard →</a>
       </div>
     </div>
   </div>
@@ -451,7 +451,7 @@
   </footer>
 
   <script>
-    const API_BASE = 'http://localhost:8000';
+    const API_BASE = window.location.origin;
 
     const dropZone   = document.getElementById('dropZone');
     const fileInput  = document.getElementById('fileInput');
@@ -551,7 +551,7 @@
       } catch (err) {
         clearInterval(ticker);
         progressWrap.classList.remove('show');
-        showError(err.message || 'Upload failed. Make sure the API server is running on port 8000.');
+        showError(err.message || 'Upload failed. Make sure the deployed API backend is reachable.');
         uploadBtn.disabled = false;
         uploadBtn.innerHTML = '<span class="btn-label">Upload & Analyse</span>';
       }

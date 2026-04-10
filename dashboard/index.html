@@ -466,6 +466,10 @@
       </div>
     </div>
     <div class="header-right">
+      <a class="status-badge" href="/upload-page" style="text-decoration:none; color:inherit;">
+        <span class="status-dot"></span>
+        Upload Data
+      </a>
       <div class="date-badge" id="date-badge">Loading date…</div>
       <div class="status-badge">
         <span class="status-dot"></span>
@@ -1043,7 +1047,7 @@
       }, 50);
 
     } catch(e) {
-      alert("❌ Could not reach backend. Make sure the server is running on http://localhost:8000");
+      alert("❌ Could not reach backend. Make sure the API backend is available and your app is running from the correct URL.");
     }
     btn.disabled = false; btn.textContent = "🚀 Predict Price & Demand";
   }
@@ -1117,7 +1121,7 @@
       appendMsg(data.answer, "ai");
     } catch(e) {
       removeTyping();
-      appendMsg("Sorry, I couldn't connect to the AI backend. Please ensure the server is running on http://localhost:8000 and your GEMINI_API_KEY is set in the .env file.", "ai");
+      appendMsg("Sorry, I couldn't connect to the AI backend. Please ensure the deployed API is reachable and NVIDIA_API_KEY is configured as a Render secret.", "ai");
     }
 
     btn.disabled = false;
