@@ -2,6 +2,8 @@ import csv
 import json
 import os
 from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import shutil
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -20,14 +22,13 @@ app.add_middleware(
 )
 
 DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "sales_data.csv"))
+DASHBOARD_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "dashboard"))
 
+app.mount("/dashboard-static", StaticFiles(directory=DASHBOARD_PATH), name="dashboard-static")
 
 @app.get("/")
 def root():
-    return {
-        "message": "Chicken Pricing AI API is running.",
-        "routes": ["/price", "/history", "/chat", "/upload", "/docs"]
-    }
+    return FileResponse(os.path.join(DASHBOARD_PATH, "index.html"))
 
 
 # ──────────────────────────────────────────────
