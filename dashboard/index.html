@@ -755,8 +755,6 @@
 </div><!-- end .app -->
 
 <script>
-  const API = "http://localhost:8000";
-
   // ── DATE ──────────────────────────────────────
   const now = new Date();
   document.getElementById("date-badge").textContent =
@@ -782,13 +780,25 @@
   }
 
 
+  const API = (window.location.protocol === "file:")
+    ? "http://localhost:8000"
+    : window.location.origin;
+
   // ── FETCH HISTORY & RENDER EVERYTHING ─────────
   let salesData = [];
 
   async function loadDashboard() {
     try {
       const res  = await fetch(`${API}/history`);
+      if (!res.ok) {
+        showDataError();
+        return;
+      }
       salesData  = await res.json();
+      if (!Array.isArray(salesData) || !salesData.length) {
+        showDataError();
+        return;
+      }
       computeKPIs(salesData);
       renderCharts(salesData);
     } catch(e) {
@@ -797,12 +807,26 @@
     }
   }
 
+  function clearCharts() {
+    Object.values(charts).forEach(chart => {
+      if (chart) {
+        chart.destroy();
+      }
+    });
+  }
+
   function showDataError() {
     document.querySelectorAll(".kpi-value").forEach(el => el.textContent = "N/A");
+    clearCharts();
   }
 
   // ── KPI COMPUTATION ───────────────────────────
   function computeKPIs(data) {
+    if (!Array.isArray(data) || !data.length) {
+      showDataError();
+      return;
+    }
+
     const avgPrice = data.reduce((s,r) => s + r.price, 0) / data.length;
     document.getElementById("kpi-avgprice").textContent = "₹" + avgPrice.toFixed(0);
 
@@ -812,8 +836,8 @@
     // Peak season
     const bySeasonSold = {};
     data.forEach(r => { bySeasonSold[r.season] = (bySeasonSold[r.season]||0) + r.sold; });
-    const peakSeason = Object.entries(bySeasonSold).sort((a,b)=>b[1]-a[1])[0];
-    document.getElementById("kpi-season").textContent = capitalize(peakSeason[0]);
+    const peakSeasonEntry = Object.entries(bySeasonSold).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById("kpi-season").textContent = peakSeasonEntry ? capitalize(peakSeasonEntry[0]) : "N/A";
 
     // Top festival
     const byFest = {};
@@ -821,7 +845,7 @@
       byFest[r.festival] = (byFest[r.festival]||0) + r.sold;
     });
     const topFest = Object.entries(byFest).sort((a,b)=>b[1]-a[1])[0];
-    document.getElementById("kpi-festival").textContent = capitalize(topFest ? topFest[0] : "N/A");
+    document.getElementById("kpi-festival").textContent = topFest ? capitalize(topFest[0]) : "N/A";
 
     // New Festival KPIs
     const festRows = data.filter(r => r.festival.toLowerCase() !== "none");
@@ -868,6 +892,11 @@
   const charts = {};
 
   function renderCharts(data) {
+    if (!Array.isArray(data) || !data.length) {
+      clearCharts();
+      return;
+    }
+
     // Destroy existing charts to prevent duplication on reload
     Object.values(charts).forEach(chart => { if (chart) chart.destroy(); });
 

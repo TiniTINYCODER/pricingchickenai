@@ -113,6 +113,9 @@ def get_price(hour: int, day: int, stock: int, price: float, season: str, festiv
 @app.get("/history")
 def get_history():
     rows = []
+    if not os.path.exists(DATA_PATH):
+        return rows
+
     try:
         with open(DATA_PATH, newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
@@ -129,8 +132,8 @@ def get_history():
                     "remaining": int(row.get("remaining", 0)),
                     "price": float(row.get("price", 0)),
                 })
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="Sales data file not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unable to read sales history: {e}")
     return rows
 
 

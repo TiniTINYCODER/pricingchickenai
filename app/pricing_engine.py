@@ -1,6 +1,7 @@
 def calculate_price(base_price, predicted_demand, remaining_stock):
 
-    demand_ratio = predicted_demand / remaining_stock
+    safe_stock = max(remaining_stock, 1)
+    demand_ratio = predicted_demand / safe_stock
 
     if demand_ratio > 1:
         price = base_price * 1.05
